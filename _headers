@@ -1,0 +1,25 @@
+# Cloudflare Pages headers.
+#
+# No filename on this site carries a content hash, so anything that changes must
+# revalidate on every request or an edge copy will serve stale code after a
+# deploy. Media is versioned by hand and changes rarely, so it gets a real TTL.
+
+/*.html
+  Cache-Control: public, max-age=0, must-revalidate
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+
+/
+  Cache-Control: public, max-age=0, must-revalidate
+
+/assets/css/*
+  Cache-Control: public, max-age=0, must-revalidate
+
+/assets/js/*
+  Cache-Control: public, max-age=0, must-revalidate
+
+/assets/img/*
+  Cache-Control: public, max-age=604800
+
+/assets/video/*
+  Cache-Control: public, max-age=604800

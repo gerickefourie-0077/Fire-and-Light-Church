@@ -1,0 +1,80 @@
+# Fire & Light Stellenbosch — website
+
+Static site for [Fire & Light Church, Stellenbosch](https://fireandlight.co.za)
+(formerly Kingdom Light Church). No build step, no dependencies.
+
+## Deploying
+
+Hosted on **Cloudflare Pages**, connected to this repository — pushing to `main`
+publishes.
+
+| Setting | Value |
+| --- | --- |
+| Framework preset | None |
+| Build command | *(leave empty)* |
+| Build output directory | `/` |
+| Root directory | `/` |
+| Production branch | `main` |
+
+`_headers` sets the cache policy. **No filename here carries a content hash**, so
+HTML/CSS/JS must revalidate every request — otherwise an edge copy serves stale
+code after a deploy and a fix appears not to have worked.
+
+## Editing content
+
+Pages are **generated**. `_build.py` holds every page's copy, the navigation
+tree, the SVG icon set and the shared shell (head, header, footer):
+
+```bash
+python3 _build.py      # rewrites the 10 .html files + sitemap.xml + robots.txt
+```
+
+Edit `_build.py`, not the HTML — the HTML is overwritten on every build.
+
+Preview locally:
+
+```bash
+python3 -m http.server 8812
+```
+
+## Design system
+
+Built against the church's brand system card. The values are not improvised:
+
+- **Type** — Barlow (headings uppercase, tracked `.03em`); IBM Plex Mono for
+  times, addresses and metadata only.
+- **Colour** — one warm ramp, no secondary hue: crimson `#d60034`, flame
+  `#e8402f`, orange `#f2762f`, sun `#f7983a`, amber `#fbb03b`, UI amber
+  `#f5a93c`, on warm ink `#1d1d1b` and paper `#faf9f6`. Neutrals are warm,
+  never blue-grey.
+- **Gradients** — two only, never re-angled: `mark` at 135°, `band` at 90°.
+- **Motion** — 220ms `cubic-bezier(.2,.6,.2,1)`, 8px rise, 2px hover lift,
+  `scale(.98)` press. No bounce.
+- **Pillars** — the arched crimson→sun capsule is reserved for the four pillars
+  and used nowhere else.
+- **Logo** — colour lockup on paper; white knockout on ink, photography and the
+  gradient band. Never recoloured, outlined or rotated.
+
+## Notable implementation details
+
+**Sermons page.** The latest video loads itself from the channel's *uploads
+playlist* (`list=UU…`, the channel ID with `UC` swapped for `UU`) — no API key,
+no RSS feed, no CORS proxy, nothing to expire. Channel is
+`@FireLightStellenbosch` / `UCdKWohKcSp-YRycCB6vAWLw`. Note there is a second,
+dormant channel with a near-identical handle — don't wire that one up.
+
+**Hero.** The brand intro is a logo reveal on black, so `mix-blend-mode: screen`
+drops its background out over the photograph. Its dim lead-in is trimmed and its
+shadows crushed at encode time, otherwise the first second is invisible and the
+video's bounding box shows as a faint rectangle. The static wordmark stays
+visible until the video reports `playing`, so blocked autoplay, a missing file
+or `prefers-reduced-motion` all still show a logo.
+
+**Contact form.** No backend — it composes a `mailto:` and hands off to the
+visitor's mail client, which is honest rather than silently dropping messages.
+If it ever needs real submissions, that means a host with form handling.
+
+## Assets
+
+`_source/` holds the colour logo masters. The white knockouts in `assets/img/`
+are generated from them; a true knockout is *entirely* white, ampersand included.
