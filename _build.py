@@ -84,6 +84,35 @@ CHEV = ('<svg viewBox="0 0 12 8" fill="none" stroke="currentColor" stroke-width=
         'aria-hidden="true"><path d="M1 1.5 6 6.5l5-5"/></svg>')
 
 
+def url_for(slug):
+    """Map a source filename to the URL the site actually serves.
+
+    Cloudflare Workers Static Assets strips `.html` and 307-redirects
+    `/contact.html` -> `/contact`. Emitting the served URL directly avoids a
+    redirect hop on every internal link and keeps each canonical tag pointing
+    at a real 200 rather than at a redirect.
+    """
+    return "/" if slug == "index.html" else "/" + slug[:-5]
+
+
+def prettify_urls(html):
+    """Rewrite page links and absolute page URLs to their extensionless form.
+
+    Page links become root-relative so they resolve identically from every
+    depth. Asset paths are deliberately left relative — the Claude Design
+    preview serves the project from a sandbox where a leading slash would
+    escape it, and relative asset paths resolve correctly from `/name` anyway.
+    """
+    html = re.sub(r'href="index\.html(#[^"]*)?"',
+                  lambda m: 'href="/%s"' % (m.group(1) or ""), html)
+    html = re.sub(r'href="([a-z0-9-]+)\.html(#[^"]*)?"',
+                  lambda m: 'href="/%s%s"' % (m.group(1), m.group(2) or ""), html)
+    html = html.replace(f"{SITE}/index.html", f"{SITE}/")
+    html = re.sub(re.escape(SITE) + r'/([a-z0-9-]+)\.html',
+                  lambda m: f"{SITE}/" + m.group(1), html)
+    return html
+
+
 def build_nav(current):
     items = []
     for label, href, sub in NAV:
@@ -131,12 +160,12 @@ def page(slug, title, description, body, current=None):
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{title}</title>
 <meta name="description" content="{description}">
-<link rel="canonical" href="{SITE}/{'' if slug == 'index.html' else slug}">
+<link rel="canonical" href="{SITE}{url_for(slug)}">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Fire &amp; Light Stellenbosch">
 <meta property="og:title" content="{title}">
 <meta property="og:description" content="{description}">
-<meta property="og:url" content="{SITE}/{'' if slug == 'index.html' else slug}">
+<meta property="og:url" content="{SITE}{url_for(slug)}">
 <meta property="og:image" content="{SITE}/assets/img/share-banner.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -1164,16 +1193,14 @@ def main():
     written = []
 
     for slug, data in PAGES.items():
-        html = page(slug, data["title"], data["description"], data["body"])
+        html = prettify_urls(page(slug, data["title"], data["description"], data["body"]))
         path = os.path.join(HERE, slug)
         with open(path, "w", encoding="utf-8") as fh:
             fh.write(html)
         written.append(slug)
 
     # sitemap
-    urls = "".join(
-        f"\n  <url><loc>{SITE}/{'' if s == 'index.html' else s}</loc></url>"
-        for s in PAGES)
+    urls = "".join(f"\n  <url><loc>{SITE}{url_for(s)}</loc></url>" for s in PAGES)
     with open(os.path.join(HERE, "sitemap.xml"), "w", encoding="utf-8") as fh:
         fh.write('<?xml version="1.0" encoding="UTF-8"?>\n'
                  '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'

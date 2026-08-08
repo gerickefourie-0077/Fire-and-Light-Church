@@ -16,6 +16,12 @@ publishes.
 | Root directory | `/` |
 | Production branch | `main` |
 
+Cloudflare created this as a **Worker** (Workers Static Assets), not a Pages
+project — new git-connected static sites land there now. It serves at
+`fire-and-light-church.gericke-fourie.workers.dev`. Note `wrangler pages
+project list` will show nothing; use `wrangler deployments list --name
+fire-and-light-church`.
+
 `_headers` sets the cache policy. **No filename here carries a content hash**, so
 HTML/CSS/JS must revalidate every request — otherwise an edge copy serves stale
 code after a deploy and a fix appears not to have worked.
@@ -34,8 +40,13 @@ Edit `_build.py`, not the HTML — the HTML is overwritten on every build.
 Preview locally:
 
 ```bash
-python3 -m http.server 8812
+python3 serve.py
 ```
+
+Use `serve.py`, **not** `python3 -m http.server`. The site's links are
+extensionless (`/contact`) because Workers Static Assets strips `.html`;
+`http.server` would 404 on every one of them. `serve.py` maps `/contact` to
+`contact.html` so local URLs match production.
 
 ## Design system
 
