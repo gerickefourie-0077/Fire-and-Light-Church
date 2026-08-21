@@ -65,19 +65,23 @@ def line_icon(name):
 
 # ------------------------------------------------------------ navigation ---
 
+# The visitor journey drives this order: a first-time visitor decides on
+# "Visit", everything else is for people who already decided. "Plan your visit"
+# is the site's primary CTA in four places, so it needs a real destination —
+# it used to land on the contact form, which answered none of its questions.
 NAV = [
     ("Home", "index.html", None),
-    ("About Us", None, [
-        ("Who We Are", "who-we-are.html"),
-        ("Meet our Team", "meet-our-team.html"),
-        ("Mission and Vision", "mission-and-vision.html"),
+    ("Visit", "visit.html", None),
+    ("About", None, [
+        ("Our Story", "our-story.html"),
         ("Our Values", "our-values.html"),
-        ("Statement of Faith", "statement-of-faith.html"),
+        ("What We Believe", "statement-of-faith.html"),
+        ("Our Team", "meet-our-team.html"),
     ]),
     ("Sermons", "sermons.html", None),
-    ("Kids Ministry", "kids-ministry.html", None),
+    ("Kids", "kids-ministry.html", None),
     ("Give", "give.html", None),
-    ("Connect", "contact.html", None),
+    ("Contact", "contact.html", None),
 ]
 
 CHEV = ('<svg viewBox="0 0 12 8" fill="none" stroke="currentColor" stroke-width="2.2" '
@@ -153,6 +157,14 @@ def page(slug, title, description, body, current=None):
     current = current or slug
     nav = build_nav(current)
 
+    # A CTA that links to the page you are already on is a dead control, so on
+    # /visit the header offers the next step instead of a self-link.
+    if slug == "visit.html":
+        header_cta = (f'<a class="fl-btn fl-btn--primary" href="{WA}" target="_blank" '
+                      f'rel="noopener">Message us</a>')
+    else:
+        header_cta = '<a class="fl-btn fl-btn--primary" href="visit.html">Plan your visit</a>'
+
     return f"""<!DOCTYPE html>
 <html lang="en-ZA">
 <head>
@@ -197,7 +209,7 @@ def page(slug, title, description, body, current=None):
     </nav>
 
     <div class="fl-header__cta">
-      <a class="fl-btn fl-btn--primary" href="contact.html">Plan your visit</a>
+      {header_cta}
     </div>
   </div>
 </header>
@@ -218,7 +230,7 @@ def page(slug, title, description, body, current=None):
       </div>
 
       <div>
-        <h4>We meet</h4>
+        <h2 class="fl-footer__h">We meet</h2>
         <p>PJ Olivier Art School<br>
            3 Blom Street, Stellenbosch<br>
            <strong>Side entrance @ Mark Street</strong></p>
@@ -226,19 +238,20 @@ def page(slug, title, description, body, current=None):
       </div>
 
       <div>
-        <h4>Explore</h4>
+        <h2 class="fl-footer__h">Explore</h2>
         <ul class="fl-footer__list">
-          <li><a href="who-we-are.html">Who We Are</a></li>
+          <li><a href="visit.html">Plan your visit</a></li>
+          <li><a href="our-story.html">Our Story</a></li>
           <li><a href="our-values.html">Our Values</a></li>
           <li><a href="sermons.html">Sermons</a></li>
-          <li><a href="kids-ministry.html">Kids Ministry</a></li>
+          <li><a href="kids-ministry.html">Kids</a></li>
           <li><a href="give.html">Give</a></li>
-          <li><a href="contact.html">Connect</a></li>
+          <li><a href="contact.html">Contact</a></li>
         </ul>
       </div>
 
       <div>
-        <h4>Get in touch</h4>
+        <h2 class="fl-footer__h">Get in touch</h2>
         <ul class="fl-footer__list">
           <li><a href="mailto:{EMAIL}">{EMAIL}</a></li>
           <li><a href="{WA}" target="_blank" rel="noopener">WhatsApp&nbsp;· Message us</a></li>
@@ -412,7 +425,7 @@ def pillars_html():
     for name, ic, text in PILLARS:
         out.append(f"""<article class="fl-pillar fl-reveal">
         <div class="fl-pillar__tablet">{line_icon(ic)}</div>
-        <h3>{name}</h3>
+        <h2>{name}</h2>
         <p>{text}</p>
       </article>""")
     return "\n".join(out)
@@ -446,6 +459,7 @@ PAGES["index.html"] = dict(
   </div>
 
   <div class="fl-hero__inner">
+    <h1 class="fl-vh">Fire &amp; Light Stellenbosch — a Spirit-empowered church in Stellenbosch</h1>
     <div class="fl-hero__markwrap" role="img" aria-label="Fire &amp; Light">
       <video class="fl-hero__markvideo" autoplay muted playsinline preload="auto"
              poster="assets/video/intro-poster.jpg" aria-hidden="true">
@@ -470,7 +484,7 @@ PAGES["index.html"] = dict(
       <p>Use the <strong>side entrance @ Mark Street</strong></p>
     </div>
     <div class="fl-btn-row fl-servicebar__do">
-      <a class="fl-btn fl-btn--ink" href="contact.html">Plan your visit</a>
+      <a class="fl-btn fl-btn--ink" href="visit.html">Plan your visit</a>
       <a class="fl-btn fl-btn--ink-ghost" href="sermons.html">{icon('play')} Latest sermon</a>
     </div>
   </div>
@@ -480,20 +494,6 @@ PAGES["index.html"] = dict(
   <div class="fl-wrap">
     <h2>We have changed our name and look.</h2>
     <p>Kingdom Light Church is now Fire &amp; Light — same heart, same love.</p>
-  </div>
-</section>
-
-<section class="fl-section" id="pillars">
-  <div class="fl-wrap">
-    <div class="fl-center" style="max-width:60ch;margin-inline:auto">
-      <span class="fl-eyebrow">What we carry</span>
-      <h2>Fire within. Light through.</h2>
-      <hr class="fl-rule">
-      <p class="fl-lead">Four things shape everything we do as a church family.</p>
-    </div>
-    <div class="fl-grid fl-grid--pillars" style="margin-top:clamp(2.5rem,5vw,3.5rem)">
-      {pillars_html()}
-    </div>
   </div>
 </section>
 
@@ -511,7 +511,7 @@ PAGES["index.html"] = dict(
            for real encounters with Him. We believe transformation happens when people experience
            Jesus personally, grow deeply in their faith, and are equipped to live out their calling.</p>
         <div class="fl-btn-row" style="margin-top:1.75rem">
-          <a class="fl-btn fl-btn--gradient" href="who-we-are.html">Our story</a>
+          <a class="fl-btn fl-btn--gradient" href="our-story.html">Our story</a>
           <a class="fl-btn fl-btn--ghost" href="meet-our-team.html">Meet the team</a>
         </div>
       </div>
@@ -541,6 +541,20 @@ PAGES["index.html"] = dict(
       <div class="fl-reveal">
         {player_html()}
       </div>
+    </div>
+  </div>
+</section>
+
+<section class="fl-section fl-section--warm" id="pillars">
+  <div class="fl-wrap">
+    <div class="fl-center" style="max-width:60ch;margin-inline:auto">
+      <span class="fl-eyebrow">What we carry</span>
+      <h2>Fire within. Light through.</h2>
+      <hr class="fl-rule">
+      <p class="fl-lead">Four things shape everything we do as a church family.</p>
+    </div>
+    <div class="fl-grid fl-grid--pillars" style="margin-top:clamp(2.5rem,5vw,3.5rem)">
+      {pillars_html()}
     </div>
   </div>
 </section>
@@ -583,9 +597,102 @@ PAGES["index.html"] = dict(
     <p>We’d love to meet you this Sunday at 9:30am. Use the side entrance in Mark Street — there’ll
        be someone at the door to point you the right way.</p>
     <div class="fl-btn-row" style="margin-top:1.75rem">
-      <a class="fl-btn fl-btn--light" href="contact.html">Plan your visit</a>
+      <a class="fl-btn fl-btn--light" href="visit.html">Plan your visit</a>
       <a class="fl-btn fl-btn--light" href="{MAPS_URL}" target="_blank" rel="noopener">Get directions</a>
     </div>
+  </div>
+</section>
+""")
+
+# ----------------------------------------------------------------- visit ---
+# The destination for the site's primary CTA. Everything here is drawn from
+# facts the site already stated (service time, address, side entrance, kids in
+# the same service); nothing about parking, service length or dress is claimed,
+# because none of that was ever established. See README for the content gaps.
+
+PAGES["visit.html"] = dict(
+    title="Plan Your Visit | Fire &amp; Light Stellenbosch",
+    description=("Everything you need for a first visit to Fire & Light Stellenbosch. Sundays "
+                 "9:30am at P.J. Olivier Art School, 3 Blom Street — side entrance in Mark Street."),
+    body=f"""
+{banner("Plan your visit",
+        "Sundays at 9:30am. Come as you are — here is everything you need to find us.")}
+
+<section class="fl-section">
+  <div class="fl-wrap">
+    <div class="fl-split">
+
+      <div class="fl-reveal">
+        <span class="fl-eyebrow">The essentials</span>
+        <h2>When and where</h2>
+        <hr class="fl-rule">
+
+        <ul class="fl-info">
+          <li>
+            <span class="fl-info__icon">{icon('clock')}</span>
+            <span>
+              <span class="fl-info__k">When</span>
+              Sunday service &middot; 9:30am
+            </span>
+          </li>
+          <li>
+            <span class="fl-info__icon">{icon('pin')}</span>
+            <span>
+              <span class="fl-info__k">Where</span>
+              P.J. Olivier Art School (Kunssentrum)<br>
+              3 Blom Street, Stellenbosch<br>
+              <strong>Use the side entrance in Mark Street</strong><br>
+              <a href="{MAPS_URL}" target="_blank" rel="noopener">Open in Google Maps &rarr;</a>
+            </span>
+          </li>
+          <li>
+            <span class="fl-info__icon">{icon('users')}</span>
+            <span>
+              <span class="fl-info__k">Kids</span>
+              Bright Sparks runs in the same service &mdash;
+              <a href="kids-ministry.html">more about kids</a>
+            </span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="fl-map fl-reveal">
+        <iframe title="Map to P.J. Olivier Art School, Stellenbosch" loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade"
+                src="https://www.google.com/maps?q=-33.937705,18.858154(P.J.+Olivier+Art+Centre)&amp;z=17&amp;output=embed"></iframe>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section class="fl-section fl-section--warm">
+  <div class="fl-wrap fl-wrap--narrow fl-reveal">
+    <span class="fl-eyebrow">What to expect</span>
+    <h2>Come as you are</h2>
+    <hr class="fl-rule">
+    <p class="fl-lead">There is no dress code and nothing you need to bring. Use the side entrance
+       in Mark Street and there will be someone at the door to point you the right way.</p>
+    <p>Kids are intentionally part of the worship experience on a Sunday morning — we believe
+       families should worship together, so your children stay with you in the service rather than
+       being signed in somewhere else.</p>
+    <p>If you would rather know what a Sunday looks like before you come, message us and we will
+       tell you honestly.</p>
+    <div class="fl-btn-row" style="margin-top:1.75rem">
+      <a class="fl-btn fl-btn--gradient" href="{WA}" target="_blank" rel="noopener">
+        {icon('whatsapp')} Ask us anything</a>
+      <a class="fl-btn fl-btn--ghost" href="sermons.html">{icon('play')} Hear a message first</a>
+    </div>
+  </div>
+</section>
+
+<section class="fl-section fl-section--ink">
+  <div class="fl-wrap fl-wrap--narrow fl-reveal" style="text-align:center">
+    <span class="fl-eyebrow">Already know us?</span>
+    <h2>We were Kingdom Light Church</h2>
+    <hr class="fl-rule" style="margin-inline:auto">
+    <p class="fl-lead">Same church, same people, same address — a new name and a new look.
+       If you are looking for Kingdom Light Church in Stellenbosch, you have found it.</p>
   </div>
 </section>
 """)
@@ -649,7 +756,7 @@ PAGES["sermons.html"] = dict(
     <h2>Better in person</h2>
     <p>Sundays 9:30am at PJ Olivier Art School, Stellenbosch.</p>
     <div class="fl-btn-row" style="margin-top:1.5rem">
-      <a class="fl-btn fl-btn--light" href="contact.html">Plan your visit</a>
+      <a class="fl-btn fl-btn--light" href="visit.html">Plan your visit</a>
     </div>
   </div>
 </section>
@@ -657,12 +764,13 @@ PAGES["sermons.html"] = dict(
 
 # ----------------------------------------------------------- who we are ----
 
-PAGES["who-we-are.html"] = dict(
-    title="Who We Are | Fire &amp; Light Stellenbosch",
+
+PAGES["our-story.html"] = dict(
+    title="Our Story | Fire &amp; Light Stellenbosch",
     description=("Eight years of God's faithfulness, a new season, and a clear mandate: to bring "
                  "the fire of His presence and the light of His truth to Stellenbosch and beyond."),
     body=f"""
-{banner("Who We Are", "Welcome to Fire &amp; Light Stellenbosch.")}
+{banner("Our Story", "Where we have come from, and where we are going.")}
 
 <section class="fl-section">
   <div class="fl-wrap fl-wrap--narrow">
@@ -673,18 +781,36 @@ PAGES["who-we-are.html"] = dict(
     <p>In 2026 we are stepping into a new season — a new mandate and a new wineskin. This is not
        just a name change. It is a defining moment in our journey as a church family.</p>
 
-    <p>Fire &amp; Light Stellenbosch exists to see Stellenbosch and the nations transformed by the
-       fire of God’s presence and the light of Jesus Christ — bringing life, truth, and freedom.</p>
-
     <p>We are a Spirit-empowered church with a passion to host God’s presence and create space for
        real encounters with Him. We believe transformation happens when people experience Jesus
        personally, grow deeply in their faith, and are equipped to live out their calling.</p>
 
-    <p>Our mission is to glorify God by proclaiming the Gospel of Jesus Christ, making disciples
-       empowered by the Holy Spirit, and advancing God’s Kingdom in every sphere of society.</p>
-
     <p>We believe every person is called to carry God’s fire within them and shine His light
        through them.</p>
+  </div>
+</section>
+
+<section class="fl-section fl-section--warm">
+  <div class="fl-wrap">
+    <div class="fl-grid fl-grid--2">
+
+      <article class="fl-card fl-reveal" style="padding:clamp(2rem,4vw,3rem)">
+        <span class="fl-eyebrow">Our Vision</span>
+        <hr class="fl-rule">
+        <p class="fl-lead">To see Stellenbosch and the nations transformed by the fire of God’s
+           presence and the light of Jesus Christ, bringing life, truth, and freedom.</p>
+      </article>
+
+      <article class="fl-card fl-reveal" style="padding:clamp(2rem,4vw,3rem)">
+        <span class="fl-eyebrow">Our Mission</span>
+        <hr class="fl-rule">
+        <p class="fl-lead">Fire &amp; Light Stellenbosch exists to glorify God by proclaiming the
+           Gospel of Jesus Christ, making disciples empowered by the Holy Spirit, and advancing
+           God’s Kingdom in every sphere of society, carrying His fire within us and shining His
+           light through us.</p>
+      </article>
+
+    </div>
   </div>
 </section>
 
@@ -693,19 +819,13 @@ PAGES["who-we-are.html"] = dict(
     <h2>This is who we are.</h2>
     <p>This is our mandate. And this is our moment.<br><strong>Welcome to the family.</strong></p>
     <div class="fl-btn-row" style="margin-top:1.75rem">
-      <a class="fl-btn fl-btn--light" href="mission-and-vision.html">Mission &amp; Vision</a>
       <a class="fl-btn fl-btn--light" href="our-values.html">Our Values</a>
+      <a class="fl-btn fl-btn--light" href="statement-of-faith.html">What We Believe</a>
     </div>
   </div>
 </section>
 
-<section class="fl-section fl-section--warm">
-  <div class="fl-wrap">
-    <div class="fl-grid fl-grid--pillars">
-      {pillars_html()}
-    </div>
-  </div>
-</section>
+{tagline_band()}
 """)
 
 # ---------------------------------------------------------------- team -----
@@ -772,56 +892,6 @@ PAGES["meet-our-team.html"] = dict(
 
 # --------------------------------------------------- mission and vision ----
 
-PAGES["mission-and-vision.html"] = dict(
-    title="Mission and Vision | Fire &amp; Light Stellenbosch",
-    description=("Our vision: to see Stellenbosch and the nations transformed by the fire of God's "
-                 "presence and the light of Jesus Christ, bringing life, truth, and freedom."),
-    body=f"""
-{banner("Mission and Vision", "Where we are going, and why.")}
-
-<section class="fl-section">
-  <div class="fl-wrap">
-    <div class="fl-grid fl-grid--2">
-
-      <article class="fl-card fl-reveal" style="padding:clamp(2rem,4vw,3rem)">
-        <span class="fl-eyebrow">Our Vision</span>
-        <hr class="fl-rule">
-        <p class="fl-lead">To see Stellenbosch and the nations transformed by the fire of God’s
-           presence and the light of Jesus Christ, bringing life, truth, and freedom.</p>
-      </article>
-
-      <article class="fl-card fl-reveal" style="padding:clamp(2rem,4vw,3rem)">
-        <span class="fl-eyebrow">Our Mission</span>
-        <hr class="fl-rule">
-        <p class="fl-lead">Fire &amp; Light Stellenbosch exists to glorify God by proclaiming the
-           Gospel of Jesus Christ, making disciples empowered by the Holy Spirit, and advancing
-           God’s Kingdom in every sphere of society, carrying His fire within us and shining His
-           light through us.</p>
-      </article>
-
-    </div>
-  </div>
-</section>
-
-<section class="fl-section fl-section--warm">
-  <div class="fl-wrap">
-    <div class="fl-center" style="max-width:60ch;margin-inline:auto">
-      <span class="fl-eyebrow">What it looks like</span>
-      <h2>Fire within. Light through.</h2>
-      <hr class="fl-rule">
-    </div>
-    <div class="fl-grid fl-grid--pillars" style="margin-top:clamp(2.5rem,5vw,3.5rem)">
-      {pillars_html()}
-    </div>
-    <div class="fl-center fl-btn-row" style="margin-top:2.5rem">
-      <a class="fl-btn fl-btn--gradient" href="our-values.html">Our Values</a>
-      <a class="fl-btn fl-btn--ghost" href="statement-of-faith.html">Statement of Faith</a>
-    </div>
-  </div>
-</section>
-
-{tagline_band()}
-""")
 
 # -------------------------------------------------------------- values -----
 
@@ -834,7 +904,7 @@ def values_html():
         out.append(f"""<article class="fl-value fl-reveal">
         <div class="fl-value__num">{i}</div>
         <div>
-          <h3>{name}</h3>
+          <h2>{name}</h2>
           <p>{body}</p>
           <ul class="fl-scripture">{verses}</ul>
         </div>
@@ -860,7 +930,7 @@ PAGES["our-values.html"] = dict(
     <h2>Come and see</h2>
     <p>Values are easier felt than read. Join us on a Sunday at 9:30am.</p>
     <div class="fl-btn-row" style="margin-top:1.5rem">
-      <a class="fl-btn fl-btn--light" href="contact.html">Plan your visit</a>
+      <a class="fl-btn fl-btn--light" href="visit.html">Plan your visit</a>
     </div>
   </div>
 </section>
@@ -873,18 +943,18 @@ def beliefs_html():
     out = []
     for name, body in BELIEFS:
         out.append(f"""<article class="fl-belief fl-reveal" style="margin-bottom:clamp(2rem,4vw,2.75rem)">
-        <h3>{name}</h3>
+        <h2>{name}</h2>
         <p>{body}</p>
       </article>""")
     return "\n".join(out)
 
 
 PAGES["statement-of-faith.html"] = dict(
-    title="Statement of Faith | Fire &amp; Light Stellenbosch",
+    title="What We Believe | Fire &amp; Light Stellenbosch",
     description=("What we believe: the triune God, the Scriptures, salvation by grace through "
                  "faith, the Holy Spirit, the Church, and the return of Christ."),
     body=f"""
-{banner("Statement of Faith", "What we believe, and what we build on.")}
+{banner("What We Believe", "Our statement of faith — what we believe, and what we build on.")}
 
 <section class="fl-section">
   <div class="fl-wrap fl-wrap--narrow fl-beliefs">
@@ -917,7 +987,7 @@ PAGES["kids-ministry.html"] = dict(
         <div class="fl-btn-row" style="margin-top:1.75rem">
           <a class="fl-btn fl-btn--gradient" href="{WA}" target="_blank" rel="noopener">
             {icon('whatsapp')} Ask us about kids</a>
-          <a class="fl-btn fl-btn--ghost" href="contact.html">Plan your visit</a>
+          <a class="fl-btn fl-btn--ghost" href="visit.html">Plan your visit</a>
         </div>
       </div>
       <div class="fl-split__media fl-reveal">
@@ -954,7 +1024,7 @@ PAGES["give.html"] = dict(
 
       <article class="fl-card fl-card--lift fl-reveal">
         <div class="fl-info__icon" style="margin-bottom:1rem">{icon('users')}</div>
-        <h3>Volunteer</h3>
+        <h2>Volunteer</h2>
         <p>Serve on one of our departments — worship, media, technical, or hospitality. There’s a
            place for your gift here.</p>
         <p style="margin-top:1rem"><a href="{WA}" target="_blank" rel="noopener">Get involved →</a></p>
@@ -962,7 +1032,7 @@ PAGES["give.html"] = dict(
 
       <article class="fl-card fl-card--lift fl-reveal">
         <div class="fl-info__icon" style="margin-bottom:1rem">{icon('heart')}</div>
-        <h3>Tithes &amp; Offerings</h3>
+        <h2>Tithes &amp; Offerings</h2>
         <p>Give by EFT, by SnapScan, or during our Sunday services. Every gift goes into the
            mission of this house.</p>
         <p style="margin-top:1rem"><a href="#banking">Banking details →</a></p>
@@ -970,7 +1040,7 @@ PAGES["give.html"] = dict(
 
       <article class="fl-card fl-card--lift fl-reveal">
         <div class="fl-info__icon" style="margin-bottom:1rem">{icon('clock')}</div>
-        <h3>Prayer</h3>
+        <h2>Prayer</h2>
         <p>Prayer is the engine room. Join our prayer team and stand with us for Stellenbosch and
            the nations.</p>
         <p style="margin-top:1rem"><a href="contact.html">Contact us →</a></p>
@@ -1012,63 +1082,24 @@ PAGES["give.html"] = dict(
 # ------------------------------------------------------------- contact -----
 
 PAGES["contact.html"] = dict(
-    title="Connect | Fire &amp; Light Stellenbosch",
-    description=("Plan a visit, send us a message, or follow Fire & Light Stellenbosch on WhatsApp, "
-                 "Facebook, Instagram, YouTube and Spotify. Sundays 9:30am."),
+    title="Contact | Fire &amp; Light Stellenbosch",
+    description=("Send Fire & Light Stellenbosch a message, or follow along on WhatsApp, "
+                 "Facebook, Instagram, YouTube and Spotify."),
     body=f"""
-{banner("Connect", "Plan a visit, send us a message, or follow along through the week.")}
+{banner("Contact", "Send us a message, or follow along through the week.")}
 
-<section class="fl-section">
-  <div class="fl-wrap">
-    <div class="fl-split">
-
-      <div class="fl-reveal">
-        <span class="fl-eyebrow">Find us</span>
-        <h2>Sundays at 9:30am</h2>
-        <hr class="fl-rule">
-
-        <ul class="fl-info">
-          <li>
-            <span class="fl-info__icon">{icon('pin')}</span>
-            <span>
-              <span class="fl-info__k">Where</span>
-              P.J. Olivier Art School (Kunssentrum)<br>
-              3 Blom Street, Stellenbosch<br>
-              <strong>Use the side entrance in Mark Street</strong><br>
-              <a href="{MAPS_URL}" target="_blank" rel="noopener">Open in Google Maps →</a>
-            </span>
-          </li>
-          <li>
-            <span class="fl-info__icon">{icon('clock')}</span>
-            <span>
-              <span class="fl-info__k">When</span>
-              Sunday service · 9:30am<br>
-              Kids ministry runs in the same service
-            </span>
-          </li>
-          <li>
-            <span class="fl-info__icon">{icon('whatsapp')}</span>
-            <span>
-              <span class="fl-info__k">WhatsApp</span>
-              <a href="{WA}" target="_blank" rel="noopener">Message us — quickest reply</a>
-            </span>
-          </li>
-          <li>
-            <span class="fl-info__icon">{icon('mail')}</span>
-            <span>
-              <span class="fl-info__k">Email</span>
-              <a href="mailto:{EMAIL}">{EMAIL}</a>
-            </span>
-          </li>
-        </ul>
+<section class="fl-section fl-section--tight">
+  <div class="fl-wrap fl-reveal">
+    <div class="fl-notice-card">
+      <div>
+        <span class="fl-eyebrow">Coming on a Sunday?</span>
+        <h2 style="margin-top:.35rem">Everything you need is on one page</h2>
+        <p>Service time, the address, the side entrance in Mark Street, the map, and what happens
+           with your kids.</p>
       </div>
-
-      <div class="fl-map fl-reveal">
-        <iframe title="Map to P.J. Olivier Art School, Stellenbosch" loading="lazy"
-                referrerpolicy="no-referrer-when-downgrade"
-                src="https://www.google.com/maps?q=-33.937705,18.858154(P.J.+Olivier+Art+Centre)&amp;z=17&amp;output=embed"></iframe>
+      <div class="fl-btn-row">
+        <a class="fl-btn fl-btn--gradient" href="visit.html">Plan your visit</a>
       </div>
-
     </div>
   </div>
 </section>

@@ -150,6 +150,13 @@ a:hover { color: var(--action-primary-hover); }
 
 :focus-visible { outline: 3px solid var(--focus-ring); outline-offset: 3px; border-radius: var(--radius-sm); }
 
+/* For headings that exist for structure and screen readers but are carried
+   visually by the logo or artwork instead. */
+.fl-vh {
+  position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
+  overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap;
+}
+
 .fl-skip {
   position: absolute; left: -9999px; top: 0; z-index: 200;
   background: var(--fl-ink); color: #fff; padding: .8rem 1.2rem;
@@ -472,6 +479,21 @@ a:hover { color: var(--action-primary-hover); }
 .fl-notice h2 { color: #fff; font-size: clamp(1.2rem, 2.6vw, 1.6rem); margin-bottom: .25rem; }
 .fl-notice p { color: rgba(255,255,255,.95); margin: 0; }
 
+/* A signpost, not an alert: Contact uses this to hand a Sunday visitor over to
+   /visit rather than answering the same question a second way. Square corners
+   match the info panel and notice bar per the brand card. */
+.fl-notice-card {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+  gap: clamp(1.25rem, 3vw, 2.5rem);
+  background: var(--surface-warm);
+  border-left: 4px solid var(--fl-crimson);
+  padding: clamp(1.5rem, 3.5vw, 2.25rem);
+}
+.fl-notice-card > div:first-child { flex: 1 1 22rem; }
+.fl-notice-card h2 { font-size: clamp(1.15rem, 2.4vw, 1.5rem); margin-bottom: .5rem; }
+.fl-notice-card p { margin: 0; color: var(--text-body); }
+.fl-notice-card .fl-btn-row { margin: 0; flex: 0 0 auto; }
+
 /* --------------------------------------------------------------- grid --- */
 
 .fl-grid { display: grid; gap: clamp(1.5rem, 3vw, 2.25rem); }
@@ -686,7 +708,7 @@ a:hover { color: var(--action-primary-hover); }
 .fl-footer { background: var(--fl-ink); color: var(--fl-ink-200); padding-block: clamp(3rem, 6vw, 4.5rem) 0; font-size: var(--type-small); }
 .fl-footer a { color: var(--fl-ink-200); text-decoration: none; }
 .fl-footer a:hover { color: var(--fl-amber); }
-.fl-footer h4 { color: #fff; font-family: var(--font-display); font-size: var(--type-caption); letter-spacing: var(--tracking-eyebrow); text-transform: uppercase; margin-bottom: 1.1rem; }
+.fl-footer__h { color: #fff; font-family: var(--font-display); font-size: var(--type-caption); letter-spacing: var(--tracking-eyebrow); text-transform: uppercase; margin-bottom: 1.1rem; }
 .fl-footer__grid { display: grid; gap: clamp(2rem, 5vw, 3rem); grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); padding-bottom: 2.5rem; }
 .fl-footer__logo { width: 190px; margin-bottom: 1.25rem; }
 .fl-footer__list { list-style: none; margin: 0; padding: 0; display: grid; gap: .6rem; }

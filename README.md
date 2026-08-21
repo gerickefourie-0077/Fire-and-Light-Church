@@ -66,6 +66,57 @@ Built against the church's brand system card. The values are not improvised:
 - **Logo** — colour lockup on paper; white knockout on ink, photography and the
   gradient band. Never recoloured, outlined or rotated.
 
+## Information architecture
+
+The nav follows the visitor's decision, not the church's org chart:
+
+```
+Home | Visit | About ▾ | Sermons | Kids | Give | Contact
+                ├ Our Story
+                ├ Our Values
+                ├ What We Believe
+                └ Our Team
+```
+
+**`/visit` is the destination for the site's primary CTA.** "Plan your visit"
+appears in the header, the service bar, the closing band and on Kids — before
+this page existed all of those landed on `/contact`, a contact form that
+answered none of a first-time visitor's questions.
+
+`/who-we-are` and `/mission-and-vision` were merged into `/our-story`: they
+restated the same mission and vision text and each re-rendered the four
+pillars, which the homepage already showed. `_redirects` keeps the old URLs
+alive with 301s — do not delete it.
+
+`/statement-of-faith` keeps its URL (existing links, search results) but is
+titled **What We Believe** so the page and its nav label agree.
+
+The homepage runs hero → service bar → name-change notice → who we are →
+latest message → what we carry → next steps → invitation. The pillars used to
+sit second, putting abstract theology before the reader knew who was speaking.
+
+### Content gaps
+
+The Visit page deliberately states **only** what the site already established.
+These are unanswered and worth filling in — none of it should be invented:
+
+- Parking — where, and is it safe on a Sunday morning?
+- How long the service runs.
+- Whether there is coffee or anything before/after.
+- Wheelchair access and whether the Mark Street side entrance has steps.
+- Kids: any age range, or is it genuinely all ages in the service?
+
+## Accessibility notes
+
+Heading order is checked on every build-and-review pass: exactly one `<h1>` per
+page and no skipped levels. Two traps:
+
+- The homepage hero is a logo, so its `<h1>` is visually hidden (`.fl-vh`).
+  Without it the page had no `h1` at all.
+- Footer section headings are `<h2 class="fl-footer__h">`, not `<h4>`. The
+  class carries the small caption styling — style them by class, never by tag,
+  or changing the level for heading order silently resizes them.
+
 ## Notable implementation details
 
 **Sermons page.** The latest video loads itself from the channel's *uploads

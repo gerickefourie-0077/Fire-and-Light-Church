@@ -1,0 +1,6 @@
+# The 7 Aug IA had five thin "About Us" pages. Who We Are and Mission and
+# Vision restated the same mission/vision text and both re-rendered the four
+# pillars, so they were merged into /our-story. These keep the old URLs alive
+# for anyone holding a link or arriving from search.
+/who-we-are          /our-story   301
+/mission-and-vision  /our-story   301
